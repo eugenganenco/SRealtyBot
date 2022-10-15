@@ -1,4 +1,3 @@
-from DataCollector import DataCollector
 from housingDataCollector import housingDataCollector
 
 
@@ -10,9 +9,10 @@ class Bot:
 
     def start(self):
         self.__dataCollector.login()
+        self.__dataCollector.findHouses()
+        self.__dataCollector.collectLinks()
         self.__dataCollector.readLinks('/Users/eugenganenco/Desktop/srealtyAnalysis/data_11_10_2022_20_22_30.txt')
         self.__dataCollector.stopCollector()
-        #self.__dataCollector.findHouses()
-        #self.__dataCollector.collectLinks()
+
 
 

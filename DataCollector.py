@@ -1,6 +1,4 @@
-import time as time_
-from typing import TextIO
-
+'''
 from selenium.webdriver.common.keys import Keys
 from datetime import datetime
 from selenium import webdriver
@@ -16,7 +14,7 @@ class DataCollector:
         self._PASSWORD = 'Digol777'
         self._driver = webdriver.Chrome(self._PATH)
         self.__linksSet = set()
-       # self._file = self._createFileForData('links')
+        self._file = self._createFileForData('links')
 
 
 
@@ -58,4 +56,4 @@ class DataCollector:
         return file
 
     def __fileClose(self):
-        self._file.close()
+        self._file.close() '''

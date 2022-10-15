@@ -2,15 +2,17 @@ from selenium.webdriver import Keys
 import time as time_
 import pandas as pd
 from selenium.webdriver.common.by import By
-from DataCollector import DataCollector
+from selenium import webdriver
+from datetime import datetime
 
 
-class housingDataCollector(DataCollector):
+class housingDataCollector():
     def __init__(self):
-        super().__init__()
+        self._PATH = '/Users/eugenganenco/Documents/drivers/chromedriver'
+        self._EMAIL = 'ganeugen@gmail.com'
+        self._PASSWORD = 'Digol777'
+        self._driver = webdriver.Chrome(self._PATH)
         self.__linksSet = set()
-
-
 
     def login(self):
         self._driver.get('https://login.szn.cz/?service=sreality&return_url=https%3A%2F%2Flogin.'
@@ -28,17 +30,25 @@ class housingDataCollector(DataCollector):
         self._driver.find_element(By.CLASS_NAME, 'btn-XL').click()
         time_.sleep(3)
 
+    def saveLinks(self):
+        with webdriver.Chrome(self._PATH) as driver:
+            self.login()
+            self.findHouses()
+            self.collectLinks()
+
     def collectLinks(self):
-        while (len(self._driver.find_elements(By.CSS_SELECTOR, "a.icon-arr-right.disabled"))) == 0:
-            houseElements = self._driver.find_elements(By.CSS_SELECTOR, 'a.title')
-            for element in houseElements:
-                link = element.get_attribute("href")
-                self.__linksSet.add(link)
-                self._file.write(link + '\n')
-            self._driver.find_element(By.CSS_SELECTOR, 'a.icon-arr-right.paging-next').click()
-            while (len(self._driver.find_elements(By.CSS_SELECTOR, 'a.btn-paging-pn')) == 0):
-                time_.sleep(0.5)
-        self._file.close()
+        name = self.__makeFileName('links')
+        with open(name, mode="w") as file:
+            while not self._driver.find_elements(By.CSS_SELECTOR, "a.icon-arr-right.disabled"):
+                houseElements = self._driver.find_elements(By.CSS_SELECTOR, 'a.title')
+                for element in houseElements:
+                    link = element.get_attribute("href")
+                    self.__linksSet.add(link)
+                    file.write(link + '\n')
+                self._driver.find_element(By.CSS_SELECTOR, 'a.icon-arr-right.paging-next').click()
+                # checks if the next page loaded
+                while not self._driver.find_elements(By.CSS_SELECTOR, 'a.btn-paging-pn'):
+                    time_.sleep(0.5)
 
     def readLinks(self, fileName):
         df = pd.DataFrame()
@@ -81,7 +91,11 @@ class housingDataCollector(DataCollector):
     def stopCollector(self):
         self._driver.quit()
 
-
+    def __makeFileName(self, type):
+        now = datetime.now()
+        dateString = now.strftime("%d_%m_%Y_%H_%M_%S")
+        name = "data{}_{}.txt".format(type, dateString)
+        return name
 
 
 
